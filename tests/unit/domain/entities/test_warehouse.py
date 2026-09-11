@@ -6,22 +6,20 @@ if TYPE_CHECKING:
 
 
 class TestWarehouse: 
-    def test_warehouse_generating(self, warehouse: Warehouse) -> None: 
-        # Validate cells count
-        assert len(warehouse.cells) == 1800
+    def test_counts(self, warehouse: Warehouse) -> None :
+        assert len(warehouse.cells) == 1800 
+        assert len(warehouse.nodes) == 141
+        assert len(warehouse.edges) == 159
         
-        # Check total amount of aisle
-        assert warehouse.cells[-1].aisle == 20
-        
-        # Chek that each node has 18 cells
+    def test_cells_per_node(self, warehouse: Warehouse) -> None: 
         nodes = {node.node_id: 0 for node in warehouse.nodes if node.type_ == "cell_access"}
         for cell in warehouse.cells: 
             nodes[cell.node_id] += 1
             
         for _, cell_count in nodes.items(): 
             assert cell_count == 18
-            
-        # Check generated node_id on uniqueness
+    
+    def test_check_ids_unique(self, warehouse: Warehouse) -> None: 
         nodes = []
         for node in warehouse.nodes: 
             if node.type_ != "cell_access": 
@@ -29,25 +27,25 @@ class TestWarehouse:
             
             assert node.node_id not in nodes
             nodes.append(node.node_id)
-        
-        # Check generated cell_id
+            
+    def test_cell_id_matches_fields(self, warehouse: Warehouse) -> None: 
         for cell in warehouse.cells: 
             aisle, section, side, tier = cell.cell_id.split("-")
             assert cell.aisle == int(aisle[1:])
             assert cell.section == int(section[1:])
             assert cell.tier == int(tier[1:])
             assert cell.side == side
-        
-        # Check edges
+            
+    def test_edge_topology(self, warehouse: Warehouse) -> None: 
         for edge in warehouse.edges: 
             if (
                 "FRONT" not in edge.from_ and 
-                "FRON" not in edge.to_ and
+                "FRONT" not in edge.to_ and
                 "BACK" not in edge.from_ and
                 "BACK" not in edge.to_
             ):
                 assert int(edge.from_[1]) < int(edge.to_[1])
-            elif "FRONT" in edge.from_ and "FRON" not in edge.to_: 
+            elif "FRONT" in edge.from_ and "FRONT" not in edge.to_: 
                 assert int(edge.from_.split("-")[0][1:]) == int(edge.to_.split("-")[1][1:])
             elif "BACK" in edge.to_ and "BACK" not in edge.from_:
                 assert int(edge.to_.split("-")[0][1:]) == int(edge.from_.split("-")[1][1:]) 
@@ -56,8 +54,11 @@ class TestWarehouse:
                 "BACK" in edge.from_ and "BACK" in edge.to_
             ):
                 assert int(edge.from_.split("-")[0][1:]) < int(edge.to_.split("-")[0][1:])
-                
-        # Check weights
+            
+            assert edge.weight >= 0
+            assert edge.bidirectional == True
+            
+    def test_edge_weights_match_coords(self, warehouse: Warehouse) -> None: 
         for edge in warehouse.edges: 
             if edge.from_ == "N-DEPOT": 
                 continue

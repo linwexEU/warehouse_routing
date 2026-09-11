@@ -1,5 +1,4 @@
-from dataclasses import dataclass, field, asdict
-from pprint import pprint
+from dataclasses import dataclass, field
 import random
 
 from app.domain.entities.cell import Cell
@@ -130,9 +129,3 @@ class Warehouse:
         self.__add_edges_between_back_nodes()
         self.__add_depot_node()
         self.__generate_cells()
-
-
-if __name__ == '__main__': 
-    warehouse = Warehouse()
-    with open("warehouse.txt", "w") as file: 
-        pprint(asdict(warehouse), stream=file)
