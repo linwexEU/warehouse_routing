@@ -1,10 +1,6 @@
-import random
 from typing import TYPE_CHECKING
 
 from app.services.inventory import InventoryService
-from app.domain.config import settings
-
-random.seed(settings.RANDOM_SEED)
 
 if TYPE_CHECKING: 
     from app.services.inventory import InventoryService
