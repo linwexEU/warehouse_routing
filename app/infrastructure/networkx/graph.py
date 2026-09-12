@@ -11,16 +11,16 @@ class NetworkxGraph:
     def __init__(self, warehouse: Warehouse) -> None:
         self.graph = nx.Graph()
         self.warehouse = warehouse
-        self._dijkstra_cache: tuple[dict[str, float], dict[str, list[str]]] | None = None
+        self._dijkstra_cache: dict[str, tuple[dict[str, float], dict[str, list[str]]]] = {}
         
-    def build_graph(self) -> nx.Graph: 
+    def build(self) -> nx.Graph: 
         """Build the graph"""
         self.__add_nodes()
         self.__add_edges()
         
         return self.graph
     
-    def draw_graph(self) -> None: 
+    def draw(self) -> None: 
         """Draw the graph"""
         pos = {n.node_id: (n.x, n.y) for n in self.warehouse.nodes}
         
@@ -35,9 +35,9 @@ class NetworkxGraph:
         plt.title("Warehouse routing")
         plt.show()
     
-    def compute_dijkstra_path_nodes(self) -> tuple[dict[str, float], dict[str, list[str]]]:
+    def compute_dijkstra_path_nodes(self, source: str = "N-DEPOT") -> tuple[dict[str, float], dict[str, list[str]]]:
         """Compute dijkstra path, 1x Dijkstra for lengths and paths."""
-        dijkstra_path_length, dijkstra_path = self._get_dijkstra()
+        dijkstra_path_length, dijkstra_path = self._get_dijkstra(source)
         
         # Get length only for cell_access 
         dijkstra_path_length_only_cell_access = {}
@@ -55,15 +55,15 @@ class NetworkxGraph:
             
         return dijkstra_path_length_only_cell_access, dijkstra_path_only_cell_access
     
-    def _get_dijkstra(self) -> tuple[dict[str, float], dict[str, list[str]]]:
+    def _get_dijkstra(self, source: str) -> tuple[dict[str, float], dict[str, list[str]]]:
         """Run single_source_dijkstra once and cache the result."""
-        if self._dijkstra_cache is None:
-            self._dijkstra_cache = nx.single_source_dijkstra(self.graph, source="N-DEPOT", weight="weight")
-        return self._dijkstra_cache
+        if source not in self._dijkstra_cache:
+            self._dijkstra_cache[source] = nx.single_source_dijkstra(self.graph, source=source, weight="weight")
+        return self._dijkstra_cache[source]
     
-    def map_dijkstra_path_cells(self) -> tuple[dict[str, float], dict[str, list[str]]]:
+    def map_dijkstra_path_cells(self, source: str = "N-DEPOT") -> tuple[dict[str, float], dict[str, list[str]]]:
         """Map nodes calculation to cells""" 
-        dijkstra_path_length_only_cell_access, dijkstra_path_only_cell_access = self.compute_dijkstra_path_nodes()
+        dijkstra_path_length_only_cell_access, dijkstra_path_only_cell_access = self.compute_dijkstra_path_nodes(source)
         
         # Map weight to cells
         dijkstra_path_length_cells = {}   

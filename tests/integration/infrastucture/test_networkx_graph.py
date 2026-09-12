@@ -1,5 +1,7 @@
 from typing import TYPE_CHECKING
 
+import networkx as nx
+
 from app.infrastructure.networkx.graph import NetworkxGraph
 
 if TYPE_CHECKING: 
@@ -10,12 +12,20 @@ class TestNetworkxGraph:
     def test_build_warehouse_graph(self, warehouse: Warehouse) -> None: 
         # Build graph
         warehouse_graph = NetworkxGraph(warehouse)
-        warehouse_graph.build_graph()
+        warehouse_graph.build()
+        
+    def test_check_graph_connected(self, warehouse: Warehouse) -> None: 
+        # Build graph
+        warehouse_graph = NetworkxGraph(warehouse)
+        warehouse_graph.build()
+        
+        # Check connected
+        nx.is_connected(warehouse_graph.graph)
         
     def test_correct_mapping(self, warehouse: Warehouse) -> None: 
         # Build graph
         warehouse_graph = NetworkxGraph(warehouse)
-        warehouse_graph.build_graph()
+        warehouse_graph.build()
         
         # Compute dijsktra shortest path
         dijkstra_path_length_only_cell_access, dijkstra_path_only_cell_access = warehouse_graph.compute_dijkstra_path_nodes()
