@@ -9,8 +9,8 @@ from app.infrastructure.networkx.graph import NetworkxGraph
 
 
 class InventoryService: 
-    def __init__(self) -> None: 
-        self.warehouse = Warehouse()
+    def __init__(self, warehouse: Warehouse | None = None) -> None: 
+        self.warehouse = Warehouse() if warehouse is None else warehouse
         self.graph = NetworkxGraph(self.warehouse)
         
         # Build graph, products, stocks and cart
@@ -18,7 +18,7 @@ class InventoryService:
         self.products = self.__build_products_list()
         self.stocks = self.__build_stocks_list()
         self.cart = self.__build_cart()
-        self.pick_items = self.__generate_pick_items_list()
+        self.pick = self.__generate_pick_items_list()
     
     def __build_products_list(self) -> list[Product]: 
         products = []
