@@ -1,21 +1,16 @@
-import random
 from typing import Any, Self
 
 from ortools.constraint_solver import routing_enums_pb2
 from ortools.constraint_solver import pywrapcp
 
 from app.infrastructure.networkx.graph import NetworkxGraph
-from app.domain.entities.warehouse import Warehouse
 from app.domain.entities.pick import Pick
 from app.domain.entities.stock import Stock
 from app.domain.entities.product import Product
 from app.domain.entities.cart import Cart
-from app.domain.config import settings
-from app.services.inventory import InventoryService
 
-random.seed(settings.RANDOM_SEED)
-    
-    
+
+
 class ORToolSolver: 
     def __init__(
         self, 
