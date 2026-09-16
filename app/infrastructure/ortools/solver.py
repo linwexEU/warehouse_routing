@@ -10,7 +10,6 @@ from app.domain.entities.product import Product
 from app.domain.entities.cart import Cart
 
 
-
 class ORToolSolver: 
     def __init__(
         self, 
@@ -195,7 +194,7 @@ class ORToolSolver:
             raise ValueError("Search parameters are not specified")
         self.solution = self.routing.SolveWithParameters(self.search_parameters)
         
-    def get_solution_info(self) -> tuple[list[str], list[str], int, int, int]:  # Dropped nodes, total_distance, total_weight_load, total_volume_load
+    def get_solution_info(self) -> tuple[list[str], list[str], int, int, int]:  # Dropped nodes, path nodes, total_distance, total_weight_load, total_volume_load
         if self.solution is None: 
             raise ValueError("No solution found!")
         
