@@ -111,11 +111,3 @@ Layout mirrors the app: `tests/unit/...` for single-entity rules,
 `tests/integration/...` for warehouse generation, graph mapping and solver
 capacity checks. `pythonpath="."` is set in `pyproject.toml`; OR-Tools SWIG
 `DeprecationWarning`s are filtered.
-
-## Limits / next steps
-
-- One cart, closed depot-to-depot tour; travel distance is minimized, handling time
-  per tier/side is not modeled.
-- No mid-route re-optimization endpoint yet (stateless recompute from picker
-  position) and no naive-vs-optimized matplotlib comparison — both are natural
-  follow-ups to the original spec.
