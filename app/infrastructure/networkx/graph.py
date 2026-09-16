@@ -40,20 +40,20 @@ class NetworkxGraph:
         dijkstra_path_length, dijkstra_path = self._get_dijkstra(source)
         
         # Get length only for cell_access 
-        dijkstra_path_length_only_cell_access = {}
+        dijkstra_path_length_routable = {}
         for node, weight in dijkstra_path_length.items(): 
-            if "FRONT" in node or "BACK" in node or "DEPOT" in node: 
+            if "FRONT" in node or "BACK" in node:
                 continue
-            dijkstra_path_length_only_cell_access[node] = weight
+            dijkstra_path_length_routable[node] = weight
         
         # Get path only for cell_access
-        dijkstra_path_only_cell_access = {}
+        dijkstra_path_routable = {}
         for node, path in dijkstra_path.items():
-            if "FRONT" in node or "BACK" in node or "DEPOT" in node: 
+            if "FRONT" in node or "BACK" in node:
                 continue 
-            dijkstra_path_only_cell_access[node] = path
+            dijkstra_path_routable[node] = path
             
-        return dijkstra_path_length_only_cell_access, dijkstra_path_only_cell_access
+        return dijkstra_path_length_routable, dijkstra_path_routable
     
     def _get_dijkstra(self, source: str) -> tuple[dict[str, float], dict[str, list[str]]]:
         """Run single_source_dijkstra once and cache the result."""
@@ -63,17 +63,17 @@ class NetworkxGraph:
     
     def map_dijkstra_path_cells(self, source: str = "N-DEPOT") -> tuple[dict[str, float], dict[str, list[str]]]:
         """Map nodes calculation to cells""" 
-        dijkstra_path_length_only_cell_access, dijkstra_path_only_cell_access = self.compute_dijkstra_path_nodes(source)
+        dijkstra_path_length_routable, dijkstra_path_routable = self.compute_dijkstra_path_nodes(source)
         
         # Map weight to cells
         dijkstra_path_length_cells = {}   
         for cell in self.warehouse.cells:
-            dijkstra_path_length_cells[cell.cell_id] = dijkstra_path_length_only_cell_access[cell.node_id]
+            dijkstra_path_length_cells[cell.cell_id] = dijkstra_path_length_routable[cell.node_id]
         
         # Map path to cells 
         dijkstra_path_cells = {}
         for cell in self.warehouse.cells:
-            dijkstra_path_cells[cell.cell_id] = dijkstra_path_only_cell_access[cell.node_id]
+            dijkstra_path_cells[cell.cell_id] = dijkstra_path_routable[cell.node_id]
             
         return dijkstra_path_length_cells, dijkstra_path_cells
         
