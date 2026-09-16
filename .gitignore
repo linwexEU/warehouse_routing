@@ -9,3 +9,4 @@ wheels/
 .env
 .vscode
 *.txt
+.env-docker
