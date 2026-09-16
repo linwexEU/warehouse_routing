@@ -26,10 +26,16 @@ class SCell(BaseModel):
     
     
 class CellsInfo(BaseModel): 
-    cells: list[SCell]
+    cells: list[SCell] = Field(description="Page of storage cells.")
+    total: int = Field(description="Total cells in the generated warehouse.")
+    limit: int = Field(description="Page size requested.")
+    offset: int = Field(description="Offset requested.")
     
     @staticmethod
-    def from_entity(cells: list[Cell]) -> "CellsInfo": 
+    def from_entity(cells: list[Cell], total: int, limit: int, offset: int) -> "CellsInfo": 
         return CellsInfo(
-            cells=[SCell.from_entity(cell) for cell in cells]
+            cells=[SCell.from_entity(cell) for cell in cells],
+            total=total,
+            limit=limit,
+            offset=offset,
         )

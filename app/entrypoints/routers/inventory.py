@@ -1,6 +1,6 @@
 import asyncio
 
-from fastapi import APIRouter, Request, HTTPException, status
+from fastapi import APIRouter, Query, Request, HTTPException, status
 
 from app.entrypoints.schemas.cell import CellsInfo
 from app.entrypoints.schemas.inventory import (
@@ -39,15 +39,20 @@ async def generate_warehouse(request: Request, payload: GenerateWarehouseRequest
 @router.get(
     "/cells",
     summary="List storage cells",
-    description="Returns all storage cells of your generated warehouse (18 per cell-access node). Generate first — 404 otherwise.",
-    response_description="Cell catalog with routing access nodes.",
+    description="Paginated storage cells of your generated warehouse (18 per cell-access node). Generate first — 404 otherwise.",
+    response_description="Page of the cell catalog with routing access nodes.",
     responses={404: {"description": "No warehouse generated for this session yet."}},
 )
-async def get_cells(request: Request) -> CellsInfo: 
+async def get_cells(
+    request: Request,
+    limit: int = Query(default=50, ge=1, le=500, description="Page size."),
+    offset: int = Query(default=0, ge=0, description="Cells to skip."),
+) -> CellsInfo: 
     warehouse = request.app.state["in_memory_db"].get_warehouse(request.client.host)
     
     if warehouse is not None:
-        return CellsInfo.from_entity(warehouse.cells)
+        page = warehouse.cells[offset:offset + limit]
+        return CellsInfo.from_entity(page, total=len(warehouse.cells), limit=limit, offset=offset)
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="You don't have generated warehouse!")
 
 

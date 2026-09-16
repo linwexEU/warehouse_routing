@@ -4,6 +4,7 @@ from fastapi import FastAPI
 
 from app.infrastructure.database.db import InMemoryDb
 from app.entrypoints.routers.inventory import router as inventory_router
+from app.entrypoints.routers.pages import router as pages_router
 
 
 @asynccontextmanager
@@ -31,6 +32,7 @@ def create_app() -> FastAPI:
     )
     
     # Register routers
+    app.include_router(pages_router)
     app.include_router(inventory_router, prefix="/inventory", tags=["Inventory"])
     
     return app
