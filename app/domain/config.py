@@ -1,7 +1,7 @@
 from dotenv import load_dotenv, find_dotenv
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-env_file = find_dotenv()
+env_file = find_dotenv("app/.env")
 load_dotenv(env_file)
 
 

@@ -11,10 +11,20 @@ class Warehouse:
     cells: list[Cell] = field(default_factory=list)
     nodes: list[Node] = field(default_factory=list)
     edges: list[Edge] = field(default_factory=list)
+    auto: bool = True
     
     def __post_init__(self) -> None: 
-        self.__generate_warehouse()
-
+        if self.auto:
+            self.__generate_warehouse()
+            
+    def generate_specific_warehouse(self, aisle_count: int, node_count: int) -> None: 
+        # Generate the whole warehouse
+        self.__generate_nodes(aisle_count, node_count)
+        self.__add_edges_between_front_nodes()
+        self.__add_edges_between_back_nodes()
+        self.__add_depot_node()
+        self.__generate_cells()
+        
     def __generate_nodes(self, aisle_count: int = 20, node_count: int = 5) -> None: 
         # Start position
         start_x = 1.0
